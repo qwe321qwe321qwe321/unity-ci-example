@@ -31,20 +31,20 @@ executors:
         name: Converting Unity license
         command: chmod +x ./ci/before_script.sh && ./$(PROJECT_PATH)ci/before_script.sh
     # Caching "Libarary" folder.
-    # - restore_cache:
-    #   keys:
-    #     # when lock file changes, use increasingly general patterns to restore cache
-    #     - unity-library-v1-{{ .Branch }}-{{ checksum "$(PROJECT_PATH)Packages/manifest.json" }}
-    #     - unity-library-v1-{{ .Branch }}-
-    #     - unity-library-v1-
+    - restore_cache:
+      keys:
+        # when lock file changes, use increasingly general patterns to restore cache
+        - unity-library-v1-{{ .Branch }}-{{ checksum "$(PROJECT_PATH)Packages/manifest.json" }}
+        - unity-library-v1-{{ .Branch }}-
+        - unity-library-v1-
     - run:
         name: Running tests
         command: chmod +x ./ci/test.sh && ./ci/test.sh
     # Caching "Libarary" folder.
-    # - save_cache:
-    #   paths:
-    #     - ./$(PROJECT_PATH)Packages  # cacahe path.
-    #   key: unity-library-v1-{{ .Branch }}-{{ checksum "$(PROJECT_PATH)Packages/manifest.json" }}
+    - save_cache:
+      paths:
+        - ./$(PROJECT_PATH)Packages  # cacahe path.
+      key: unity-library-v1-{{ .Branch }}-{{ checksum "$(PROJECT_PATH)Packages/manifest.json" }}
     - store_artifacts:
         path: $(pwd)/$(TEST_PLATFORM)-TestResults.xml
 
