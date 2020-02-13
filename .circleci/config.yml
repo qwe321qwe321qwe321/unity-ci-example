@@ -32,12 +32,13 @@ executors:
         command: chmod +x ./ci/before_script.sh && ./$(PROJECT_PATH)ci/before_script.sh
     # Caching "Libarary" folder.
     - run: cp $(PROJECT_PATH)Packages/manifest.json checksum_file
+    - run: export caching_platform=$(UNITY_VERSION)$(DOCKER_PLATFORM)
     - restore_cache:
         keys:
           # when lock file changes, use increasingly general patterns to restore cache
-          - unity-library-v1-$(UNITY_VERSION)$(DOCKER_PLATFORM)-{{ .Branch }}-{{ checksum "checksum_file" }}
-          - unity-library-v1-$(UNITY_VERSION)$(DOCKER_PLATFORM)-{{ .Branch }}-
-          - unity-library-v1-$(UNITY_VERSION)$(DOCKER_PLATFORM)-
+          - unity-library-v1-{{ .Environment.caching_platform }}-{{ .Branch }}-{{ checksum "checksum_file" }}
+          - unity-library-v1-{{ .Environment.caching_platform }}-{{ .Branch }}-
+          - unity-library-v1-{{ .Environment.caching_platform }}-
     - run:
         name: Running tests
         command: chmod +x ./ci/test.sh && ./ci/test.sh
@@ -46,7 +47,7 @@ executors:
     - save_cache:
         paths:
           - ./cache_folder
-        key: unity-library-v1-{{ .Environment.UNITY_VERSION }}-{{ .Environment.DOCKER_PLATFORM }}-{{ .Branch }}-{{ checksum "checksum_file" }}
+        key: unity-library-v1-{{ .Environment.caching_platform }}-{{ .Branch }}-{{ checksum "checksum_file" }}
     - store_artifacts:
         path: $(pwd)/$(TEST_PLATFORM)-TestResults.xml
 
