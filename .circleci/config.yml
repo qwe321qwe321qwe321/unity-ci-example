@@ -9,7 +9,7 @@ executors:
       image-platform:
         type: string
     docker:
-      - image: gableroux/unity3d:<< parameters.unity-version >><< parameters.image-platform >>
+      - image: gableroux/unity3d:2018.4.13f1
     environment:
       UNITY_VERSION: << parameters.unity-version >>
       BUILD_NAME: ExampleProjectName
