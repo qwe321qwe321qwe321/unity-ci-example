@@ -93,9 +93,6 @@ jobs:
     <<: *test
     environment:
       TEST_PLATFORM: playmode
-    executor: 
-      - unity_exec
-        image-platform: -windows
       
 
 
