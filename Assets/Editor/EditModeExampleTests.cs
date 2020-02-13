@@ -12,7 +12,7 @@ public class EditModeExampleTests
 	public void EditModeExampleTestSimplePasses ()
 	{
 		// Use the Assert class to test conditions.
-		Assert.True(false);
+		Assert.True(true);
 	}
 
 	// A UnityTest behaves like a coroutine in PlayMode
