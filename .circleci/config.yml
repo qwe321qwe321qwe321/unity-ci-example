@@ -49,7 +49,6 @@ executors:
         paths:
           - ./cache_folder
         key: unity-library-v2-{{ .Environment.CIRCLE_JOB }}-{{ .Branch }}-{{ checksum "checksum_file" }}
-    - run: cp /root/project/${PROJECT_PATH}$TEST_PLATFORM-results.xml /root/project/TestResults.xml
     - store_artifacts:
         path: /root/project/TestResults.xml
 
