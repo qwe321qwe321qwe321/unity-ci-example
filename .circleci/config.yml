@@ -57,26 +57,7 @@ executors:
         command: |
           apt update && apt install -y git 
           git clone https://github.com/qwe321qwe321qwe321/unity-ci-build-scripts.git
-    - run:
-        name: Getting build scripts for your unity version if possible
-        command: if [ $(git ls-remote https://github.com/qwe321qwe321qwe321/unity-ci-build-scripts.git "$UNITY_VERSION" | wc -l) -eq 1 ]; then cd unity-ci-build-scripts && git pull origin "$UNITY_VERSION" && cd ..; fi
-    - run:
-        name: Injecting build scripts into the project
-        command: |
-          cp -r unity-ci-build-scripts/Assets/Editor ./Assets
-          cp -r unity-ci-build-scripts/ci ./ci
-    - run: 
-        name: Converting Unity license
-        command: chmod +x ./ci/before_script.sh && ./ci/before_script.sh
-    - run: ls -ls /usr/bin/python*
-    - run:
-        name: Building game binaries
-        command: chmod +x ./ci/build.sh && ./ci/build.sh
-    - run: 
-        name: Zipping build
-        command: apt update && apt -y install zip && zip -r "build.zip" ./Builds/
-    - store_artifacts:
-        path: Build-$(BUILD_TARGET).zip
+    
 
 jobs:
   test_editmode:
@@ -88,20 +69,20 @@ jobs:
     environment:
       TEST_PLATFORM: playmode
 
-  # build_windows:
-  #   <<: *build
-  #   environment:
-  #     DOCKER_PLATFORM: -windows
-  #     BUILD_TARGET: StandaloneWindows64
-  # build_osx:
-  #   <<: *build
-  #   environment:
-  #     DOCKER_PLATFORM: -mac
-  #     BUILD_TARGET: StandaloneOSX
-  # build_linux:
-  #   <<: *build
-  #   environment:
-  #     BUILD_TARGET: StandaloneLinux64
+  build_windows:
+    <<: *build
+    environment:
+      DOCKER_PLATFORM: -windows
+      BUILD_TARGET: StandaloneWindows64
+  build_osx:
+    <<: *build
+    environment:
+      DOCKER_PLATFORM: -mac
+      BUILD_TARGET: StandaloneOSX
+  build_linux:
+    <<: *build
+    environment:
+      BUILD_TARGET: StandaloneLinux64
 #  build_webgl:
 #    <<: *build
 #    environment:
@@ -113,19 +94,18 @@ workflows:
     jobs:
       - test_editmode
       - test_playmode
-      
-      # - build_windows:
-      #     requires:
-      #     - test_editmode
-      #     - test_playmode
-      # - build_osx:
-      #     requires:
-      #     - test_editmode
-      #     - test_playmode
-      # - build_linux:
-      #     requires:
-      #     - test_editmode
-      #     - test_playmode
+      - build_windows:
+          requires:
+          - test_editmode
+          - test_playmode
+      - build_osx:
+          requires:
+          - test_editmode
+          - test_playmode
+      - build_linux:
+          requires:
+          - test_editmode
+          - test_playmode
 # Sadly webgl builds seem broken as of now... trying to fix this asap.
 #      - build_webgl:
 #          requires:
