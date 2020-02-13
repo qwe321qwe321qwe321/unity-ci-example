@@ -107,10 +107,10 @@ jobs:
       TEST_PLATFORM: playmode
 
   # build_windows:
-    <<: *build
-    environment:
-      DOCKER_PLATFORM: -windows
-      BUILD_TARGET: StandaloneWindows64
+    # <<: *build
+    # environment:
+    #   DOCKER_PLATFORM: -windows
+    #   BUILD_TARGET: StandaloneWindows64
   # build_osx:
   #   <<: *build
   #   environment:
