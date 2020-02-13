@@ -1,16 +1,14 @@
 version: 2.1
 
 executors:
-  environment:
-    UNITY_VERSION: 2018.4.13f1
   unity_exec:
-    docker:
-      - image: gableroux/unity3d:$(UNITY_VERSION)$(DOCKER_PLATFORM)
     environment:
+      UNITY_VERSION: 2018.4.13f1
       BUILD_NAME: ExampleProjectName
       # Just comment it if the project path is root.
       #PROJECT_PATH: /project
-
+    docker:
+      - image: gableroux/unity3d:$(UNITY_VERSION)$(DOCKER_PLATFORM)
 
 .test: &test
   executor: unity_exec
