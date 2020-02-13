@@ -106,11 +106,11 @@ jobs:
     environment:
       TEST_PLATFORM: playmode
 
-  # build_windows:
-    # <<: *build
-    # environment:
-    #   DOCKER_PLATFORM: -windows
-    #   BUILD_TARGET: StandaloneWindows64
+  build_windows:
+    <<: *build
+    environment:
+      DOCKER_PLATFORM: -windows
+      BUILD_TARGET: StandaloneWindows64
   # build_osx:
   #   <<: *build
   #   environment:
@@ -132,10 +132,10 @@ workflows:
       - test_editmode
       - test_playmode
       
-      # - build_windows:
-      #     requires:
-      #     - test_editmode
-      #     - test_playmode
+      - build_windows:
+          requires:
+          - test_editmode
+          - test_playmode
       # - build_osx:
       #     requires:
       #     - test_editmode
