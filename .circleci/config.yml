@@ -49,6 +49,7 @@ executors:
         paths:
           - ./cache_folder
         key: unity-library-v2-{{ .Environment.CIRCLE_JOB }}-{{ .Branch }}-{{ checksum "checksum_file" }}
+    - run: cp /root/project/${PROJECT_PATH}$TEST_PLATFORM-results.xml /root/project/TestResults.xml
     - store_artifacts:
         path: /root/project/TestResults.xml
 
@@ -94,7 +95,7 @@ executors:
         key: unity-library-v2-{{ .Branch }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "checksum_file" }}
     - run: 
         name: Zipping build
-        command: apt update && apt -y install zip && zip -r "Build-$BUILD_TARGET.zip" ./${PROJECT_PATH}Builds/
+        command: apt update && apt -y install zip && zip -r "Build.zip" ./${PROJECT_PATH}Builds/
     - store_artifacts:
         path: Build.zip
 
