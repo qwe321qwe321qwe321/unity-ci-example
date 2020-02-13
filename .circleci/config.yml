@@ -113,15 +113,15 @@ jobs:
     environment:
       DOCKER_PLATFORM: -windows
       BUILD_TARGET: StandaloneWindows64
-  # build_osx:
-  #   <<: *build
-  #   environment:
-  #     DOCKER_PLATFORM: -mac
-  #     BUILD_TARGET: StandaloneOSX
-  # build_linux:
-  #   <<: *build
-  #   environment:
-  #     BUILD_TARGET: StandaloneLinux64
+  build_osx:
+    <<: *build
+    environment:
+      DOCKER_PLATFORM: -mac
+      BUILD_TARGET: StandaloneOSX
+  build_linux:
+    <<: *build
+    environment:
+      BUILD_TARGET: StandaloneLinux64
 #  build_webgl:
 #    <<: *build
 #    environment:
