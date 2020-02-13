@@ -3,8 +3,9 @@ version: 2.1
 executors:
   unity_exec:
     docker:
-      - image: gableroux/unity3d:2018.4.13f1$DOCKER_PLATFORM
+      - image: gableroux/unity3d:$UNITY_VERSION$DOCKER_PLATFORM
     environment:
+      UNITY_VERSION: 2018.4.13f1
       BUILD_NAME: ExampleProjectName
 
 .test: &test
@@ -18,7 +19,7 @@ executors:
           git clone https://github.com/qwertyuu/unity-ci-build-scripts.git
     - run:
         name: Getting build scripts for your unity version if possible
-        command: UNITY_VERSION=2018.4.13f1; if [ $(git ls-remote https://github.com/qwertyuu/unity-ci-build-scripts.git "$UNITY_VERSION" | wc -l) -eq 1 ]; then cd unity-ci-build-scripts && git pull origin "$UNITY_VERSION" && cd ..; fi
+        command: if [ $(git ls-remote https://github.com/qwertyuu/unity-ci-build-scripts.git "$UNITY_VERSION" | wc -l) -eq 1 ]; then cd unity-ci-build-scripts && git pull origin "$UNITY_VERSION" && cd ..; fi
     - run:
         name: Injecting build scripts into the project
         command: |
@@ -44,7 +45,7 @@ executors:
           git clone https://github.com/qwertyuu/unity-ci-build-scripts.git
     - run:
         name: Getting build scripts for your unity version if possible
-        command: UNITY_VERSION=2018.4.13f1; if [ $(git ls-remote https://github.com/qwertyuu/unity-ci-build-scripts.git "$UNITY_VERSION" | wc -l) -eq 1 ]; then cd unity-ci-build-scripts && git pull origin "$UNITY_VERSION" && cd ..; fi
+        command: if [ $(git ls-remote https://github.com/qwertyuu/unity-ci-build-scripts.git "$UNITY_VERSION" | wc -l) -eq 1 ]; then cd unity-ci-build-scripts && git pull origin "$UNITY_VERSION" && cd ..; fi
     - run:
         name: Injecting build scripts into the project
         command: |
