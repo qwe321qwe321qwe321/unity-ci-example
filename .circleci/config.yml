@@ -86,7 +86,6 @@ jobs:
   build_linux:
     <<: *build
     environment:
-      DOCKER_PLATFORM: 
       BUILD_TARGET: StandaloneLinux64
   build_webgl:
     <<: *build
