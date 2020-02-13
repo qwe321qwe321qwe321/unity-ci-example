@@ -80,7 +80,7 @@ executors:
           - unity-library-v1-{{ .Branch }}-{{ checksum "checksum_file" }}
           - unity-library-v1-{{ .Branch }}-
           - unity-library-v1-
-    - run: mv ./cache_folder ./$(PROJECT_PATH)Library
+    - run: mv ./cache_folder ./$(PROJECT_PATH)Library || exit 0
     - run:
         name: Building game binaries
         command: chmod +x ./$(PROJECT_PATH)ci/build.sh && ./$(PROJECT_PATH)ci/build.sh
