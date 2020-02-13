@@ -35,7 +35,8 @@ executors:
     - restore_cache:
         keys:
           # when lock file changes, use increasingly general patterns to restore cache
-          - unity-library-v1-{{ .Branch }}-{{ checksum "checksum_file" }}
+          - unity-library-v1-{{ .Branch }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "checksum_file" }}
+          - unity-library-v1-{{ .Branch }}-{{ .Environment.CIRCLE_JOB }}-
           - unity-library-v1-{{ .Branch }}-
           - unity-library-v1-
     # Caching back library folder.
@@ -78,7 +79,8 @@ executors:
     - restore_cache:
         keys:
           # when lock file changes, use increasingly general patterns to restore cache
-          - unity-library-v1-{{ .Branch }}-{{ checksum "checksum_file" }}
+          - unity-library-v1-{{ .Branch }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "checksum_file" }}
+          - unity-library-v1-{{ .Branch }}-{{ .Environment.CIRCLE_JOB }}-
           - unity-library-v1-{{ .Branch }}-
           - unity-library-v1-
     # Caching back library folder.
@@ -108,20 +110,20 @@ jobs:
     environment:
       TEST_PLATFORM: playmode
 
-  build_windows:
-    <<: *build
-    environment:
-      DOCKER_PLATFORM: -windows
-      BUILD_TARGET: StandaloneWindows64
-  build_osx:
-    <<: *build
-    environment:
-      DOCKER_PLATFORM: -mac
-      BUILD_TARGET: StandaloneOSX
-  build_linux:
-    <<: *build
-    environment:
-      BUILD_TARGET: StandaloneLinux64
+  # build_windows:
+  #   <<: *build
+  #   environment:
+  #     DOCKER_PLATFORM: -windows
+  #     BUILD_TARGET: StandaloneWindows64
+  # build_osx:
+  #   <<: *build
+  #   environment:
+  #     DOCKER_PLATFORM: -mac
+  #     BUILD_TARGET: StandaloneOSX
+  # build_linux:
+  #   <<: *build
+  #   environment:
+  #     BUILD_TARGET: StandaloneLinux64
 #  build_webgl:
 #    <<: *build
 #    environment:
@@ -134,10 +136,10 @@ workflows:
       - test_editmode
       - test_playmode
       
-      - build_windows:
-          requires:
-          - test_editmode
-          - test_playmode
+      # - build_windows:
+      #     requires:
+      #     - test_editmode
+      #     - test_playmode
       # - build_osx:
       #     requires:
       #     - test_editmode
