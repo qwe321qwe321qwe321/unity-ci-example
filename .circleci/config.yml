@@ -3,7 +3,7 @@ version: 2.1
 executors:
   unity_exec:
     docker:
-      - image: gableroux/unity3d:$UNITY_VERSION$DOCKER_PLATFORM
+      - image: gableroux/unity3d:$UNITY_VERSION$DOCKER_PLATFORM # Select RIGHT unity image and platform by environment.
     environment:
       UNITY_VERSION: 2018.4.13f1
       BUILD_NAME: ExampleProjectName
@@ -15,42 +15,42 @@ executors:
   steps:
     - checkout
     - run:
-        name: Fetching build scripts
+        name: Fetching build scripts # Build scripts is stored in another repository.
         command: |
           apt update && apt install -y git 
           git clone https://github.com/qwe321qwe321qwe321/unity-ci-build-scripts.git
     - run:
-        name: Getting build scripts for your unity version if possible
+        name: Getting build scripts for your unity version if possible # Check if there is any special version as Unity version.
         command: if [ $(git ls-remote https://github.com/qwe321qwe321qwe321/unity-ci-build-scripts.git "$UNITY_VERSION" | wc -l) -eq 1 ]; then cd unity-ci-build-scripts && git pull origin "$UNITY_VERSION" && cd ..; fi
     - run:
-        name: Injecting build scripts into the project
+        name: Injecting build scripts into the project # Inject the manual build script into the project and then we will invoke the function which is in that script to build the project.
         command: |
           cp -r unity-ci-build-scripts/Assets/Editor ./${PROJECT_PATH}Assets
           cp -r unity-ci-build-scripts/ci ./ci
     - run: 
         name: Converting Unity license
-        command: chmod +x ./ci/before_script.sh && ./ci/before_script.sh
+        command: chmod +x ./ci/before_script.sh && ./ci/before_script.sh # Call the shell script which is in another repository.
     # Caching "Libarary" folder.
-    - run: cp ${PROJECT_PATH}Packages/manifest.json checksum_file
+    - run: cp ${PROJECT_PATH}Packages/manifest.json checksum_file # Doing this is because restore_cache instruction does not support environment variable to be keys.
     - restore_cache:
         keys:
-          # when lock file changes, use increasingly general patterns to restore cache
+          # when the file changes, use increasingly general patterns to restore cache
           - unity-library-v2-{{ .Environment.CIRCLE_JOB }}-{{ .Branch }}-{{ checksum "checksum_file" }}
           - unity-library-v2-{{ .Environment.CIRCLE_JOB }}-{{ .Branch }}-
           - unity-library-v2-{{ .Environment.CIRCLE_JOB }}-
     # Caching back library folder.
-    - run: mv ./cache_folder ./${PROJECT_PATH}Library || exit 0
+    - run: mv ./cache_folder ./${PROJECT_PATH}Library || exit 0 # it's for restoring cache to correct location. You can see following code about save caches and you will know why.
     - run:
         name: Running tests
         command: chmod +x ./ci/test.sh && ./ci/test.sh
     # Caching "Libarary" folder.
-    - run: mv ./${PROJECT_PATH}Library ./cache_folder # cache path.
+    - run: mv ./${PROJECT_PATH}Library ./cache_folder # Again, save_cache cannot pass by environment variables.
     - save_cache:
         paths:
           - ./cache_folder
         key: unity-library-v2-{{ .Environment.CIRCLE_JOB }}-{{ .Branch }}-{{ checksum "checksum_file" }}
     - store_artifacts:
-        path: /root/project/TestResults.xml
+        path: /root/project/TestResults.xml # Why this name? It must be.
 
 .build: &build
   executor: unity_exec
@@ -100,7 +100,7 @@ executors:
 
 jobs:
   test_editmode:
-    <<: *test
+    <<: *test # WTF is this symbol mean? Please google YAML format.
     environment:
       TEST_PLATFORM: editmode
   test_playmode:
