@@ -1,6 +1,6 @@
 # unity3d ci example
 
-[![CircleCI](https://circleci.com/gh/qwertyuu/unity-ci-example.svg?style=svg)](https://circleci.com/gh/qwertyuu/unity-ci-example)
+[![CircleCI](https://circleci.com/gh/qwe321qwe321qwe321/unity-ci-example.svg?style=svg)](https://circleci.com/gh/qwe321qwe321qwe321/unity-ci-example)
 
 _Note: This project is a "fork" of https://gitlab.com/gableroux/unity3d-gitlab-ci-example. More information available there._
 
