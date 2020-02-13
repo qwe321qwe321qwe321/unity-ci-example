@@ -35,10 +35,9 @@ executors:
     - restore_cache:
         keys:
           # when lock file changes, use increasingly general patterns to restore cache
-          - unity-library-v2-{{ .Branch }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "checksum_file" }}
-          - unity-library-v2-{{ .Branch }}-{{ .Environment.CIRCLE_JOB }}-
-          - unity-library-v2-{{ .Branch }}-
-          - unity-library-v2-
+          - unity-library-v2-{{ .Environment.CIRCLE_JOB }}-{{ .Branch }}-{{ checksum "checksum_file" }}
+          - unity-library-v2-{{ .Environment.CIRCLE_JOB }}-{{ .Branch }}-
+          - unity-library-v2-{{ .Environment.CIRCLE_JOB }}-
     # Caching back library folder.
     - run: mv ./cache_folder ./${PROJECT_PATH}Library || exit 0
     - run:
@@ -49,9 +48,9 @@ executors:
     - save_cache:
         paths:
           - ./cache_folder
-        key: unity-library-v2-{{ .Branch }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "checksum_file" }}
+        key: unity-library-v2-{{ .Environment.CIRCLE_JOB }}-{{ .Branch }}-{{ checksum "checksum_file" }}
     - store_artifacts:
-        path: $(pwd)/$TEST_PLATFORM-TestResults.xml
+        path: /root/project/TestResults.xml
 
 .build: &build
   executor: unity_exec
@@ -79,10 +78,9 @@ executors:
     - restore_cache:
         keys:
           # when lock file changes, use increasingly general patterns to restore cache
-          - unity-library-v2-{{ .Branch }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "checksum_file" }}
-          - unity-library-v2-{{ .Branch }}-{{ .Environment.CIRCLE_JOB }}-
-          - unity-library-v2-{{ .Branch }}-
-          - unity-library-v2-
+          - unity-library-v2-{{ .Environment.CIRCLE_JOB }}-{{ .Branch }}-{{ checksum "checksum_file" }}
+          - unity-library-v2-{{ .Environment.CIRCLE_JOB }}-{{ .Branch }}-
+          - unity-library-v2-{{ .Environment.CIRCLE_JOB }}-
     # Caching back library folder.
     - run: mv ./cache_folder ./${PROJECT_PATH}Library || exit 0
     - run:
@@ -96,9 +94,9 @@ executors:
         key: unity-library-v2-{{ .Branch }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "checksum_file" }}
     - run: 
         name: Zipping build
-        command: apt update && apt -y install zip && zip -r "build.zip" ./${PROJECT_PATH}Builds/
+        command: apt update && apt -y install zip && zip -r "Build.zip" ./${PROJECT_PATH}Builds/
     - store_artifacts:
-        path: Build-$BUILD_TARGET.zip
+        path: Build.zip
 
 jobs:
   test_editmode:
