@@ -43,7 +43,7 @@ executors:
     - run: mv ./cache_folder ./${PROJECT_PATH}Library || exit 0
     - run:
         name: Running tests
-        command: chmod +x ./ci/test.sh && ./ci/test.sh
+        command: chmod +x ./${PROJECT_PATH}ci/test.sh && ./${PROJECT_PATH}ci/test.sh
     # Caching "Libarary" folder.
     - run: mv ./${PROJECT_PATH}Library ./cache_folder # cache path.
     - save_cache:
