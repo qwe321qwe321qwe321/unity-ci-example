@@ -8,7 +8,7 @@ executors:
       UNITY_VERSION: 2018.4.13f1
       BUILD_NAME: ExampleProjectName
       # Just comment it if the project path is root.
-      #PROJECT_PATH: /project
+      PROJECT_PATH: project/
 
 .test: &test
   executor: unity_exec
@@ -25,13 +25,13 @@ executors:
     - run:
         name: Injecting build scripts into the project
         command: |
-          cp -r unity-ci-build-scripts/Assets/Editor ./$(PROJECT_PATH)Assets
-          cp -r unity-ci-build-scripts/ci ./$(PROJECT_PATH)ci
+          cp -r unity-ci-build-scripts/Assets/Editor ./${PROJECT_PATH}Assets
+          cp -r unity-ci-build-scripts/ci ./ci
     - run: 
         name: Converting Unity license
-        command: chmod +x ./$(PROJECT_PATH)ci/before_script.sh && ./$(PROJECT_PATH)ci/before_script.sh
+        command: chmod +x ./ci/before_script.sh && ./ci/before_script.sh
     # Caching "Libarary" folder.
-    - run: cp $(PROJECT_PATH)Packages/manifest.json checksum_file
+    - run: cp ${PROJECT_PATH}Packages/manifest.json checksum_file
     - restore_cache:
         keys:
           # when lock file changes, use increasingly general patterns to restore cache
@@ -40,18 +40,18 @@ executors:
           - unity-library-v1-{{ .Branch }}-
           - unity-library-v1-
     # Caching back library folder.
-    - run: mv ./cache_folder ./$(PROJECT_PATH)Library || exit 0
+    - run: mv ./cache_folder ./${PROJECT_PATH}Library || exit 0
     - run:
         name: Running tests
         command: chmod +x ./ci/test.sh && ./ci/test.sh
     # Caching "Libarary" folder.
-    - run: mv ./$(PROJECT_PATH)Library ./cache_folder # cache path.
+    - run: mv ./${PROJECT_PATH}Library ./cache_folder # cache path.
     - save_cache:
         paths:
           - ./cache_folder
         key: unity-library-v1-{{ .Branch }}-{{ checksum "checksum_file" }}
     - store_artifacts:
-        path: $(pwd)/$(TEST_PLATFORM)-TestResults.xml
+        path: $(pwd)/$TEST_PLATFORM-TestResults.xml
 
 .build: &build
   executor: unity_exec
@@ -68,14 +68,14 @@ executors:
     - run:
         name: Injecting build scripts into the project
         command: |
-          cp -r unity-ci-build-scripts/Assets/Editor ./$(PROJECT_PATH)Assets
-          cp -r unity-ci-build-scripts/ci ./$(PROJECT_PATH)ci
+          cp -r unity-ci-build-scripts/Assets/Editor ./${PROJECT_PATH}Assets
+          cp -r unity-ci-build-scripts/ci ./ci
     - run: 
         name: Converting Unity license
-        command: chmod +x ./$(PROJECT_PATH)ci/before_script.sh && ./$(PROJECT_PATH)ci/before_script.sh
+        command: chmod +x ./ci/before_script.sh && ./ci/before_script.sh
     - run: ls -ls /usr/bin/python*
       # Caching "Libarary" folder.
-    - run: cp $(PROJECT_PATH)Packages/manifest.json checksum_file
+    - run: cp ${PROJECT_PATH}Packages/manifest.json checksum_file
     - restore_cache:
         keys:
           # when lock file changes, use increasingly general patterns to restore cache
@@ -84,21 +84,21 @@ executors:
           - unity-library-v1-{{ .Branch }}-
           - unity-library-v1-
     # Caching back library folder.
-    - run: mv ./cache_folder ./$(PROJECT_PATH)Library || exit 0
+    - run: mv ./cache_folder ./${PROJECT_PATH}Library || exit 0
     - run:
         name: Building game binaries
-        command: chmod +x ./$(PROJECT_PATH)ci/build.sh && ./$(PROJECT_PATH)ci/build.sh
+        command: chmod +x ./ci/build.sh && ./ci/build.sh
     # Caching "Libarary" folder.
-    - run: mv ./$(PROJECT_PATH)Library ./cache_folder # cache path.
+    - run: mv ./${PROJECT_PATH}Library ./cache_folder # cache path.
     - save_cache:
         paths:
           - ./cache_folder
         key: unity-library-v1-{{ .Branch }}-{{ checksum "checksum_file" }}
     - run: 
         name: Zipping build
-        command: apt update && apt -y install zip && zip -r "build.zip" ./$(PROJECT_PATH)Builds/
+        command: apt update && apt -y install zip && zip -r "build.zip" ./${PROJECT_PATH}Builds/
     - store_artifacts:
-        path: Build-$(BUILD_TARGET).zip
+        path: Build-$BUILD_TARGET.zip
 
 jobs:
   test_editmode:
