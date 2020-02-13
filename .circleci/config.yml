@@ -34,7 +34,7 @@ executors:
     - restore_cache:
       keys:
         # when lock file changes, use increasingly general patterns to restore cache
-        - unity-library-v1-{{ .Branch }}-{{ checksum "$(PROJECT_PATH)Packages/manifest.json" }}
+        - unity-library-v1-{{ .Branch }}-{{ checksum "Packages/manifest.json" }}
         - unity-library-v1-{{ .Branch }}-
         - unity-library-v1-
     - run:
@@ -43,8 +43,8 @@ executors:
     # Caching "Libarary" folder.
     - save_cache:
       paths:
-        - ./$(PROJECT_PATH)Packages  # cacahe path.
-      key: unity-library-v1-{{ .Branch }}-{{ checksum "$(PROJECT_PATH)Packages/manifest.json" }}
+        - ./Packages  # cacahe path.
+      key: unity-library-v1-{{ .Branch }}-{{ checksum "Packages/manifest.json" }}
     - store_artifacts:
         path: $(pwd)/$(TEST_PLATFORM)-TestResults.xml
 
