@@ -16,7 +16,7 @@ executors:
     - checkout
     - run:
         name: Cd to project folder
-        command: cd ${PROJECT_PATH}
+        command: cd $PROJECT_PATH && echo $PROJECT_PATH && echo ${PROJECT_PATH}
     - run:
         name: Fetching build scripts
         command: |
