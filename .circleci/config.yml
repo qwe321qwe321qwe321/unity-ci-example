@@ -2,13 +2,19 @@ version: 2.1
 
 executors:
   unity_exec:
+    parameters:
+      unity-version:
+        type: string
+        default: 2018.4.13f1
+      image-platform:
+        type: string
+    docker:
+      - image: gableroux/unity3d:<< parameters.unity-version >><< parameters.image-platform >>
     environment:
-      UNITY_VERSION: 2018.4.13f1
+      UNITY_VERSION: << parameters.unity-version >>
       BUILD_NAME: ExampleProjectName
       # Just comment it if the project path is root.
       #PROJECT_PATH: /project
-    docker:
-      - image: gableroux/unity3d:$(UNITY_VERSION)$(DOCKER_PLATFORM)
 
 .test: &test
   executor: unity_exec
@@ -87,6 +93,11 @@ jobs:
     <<: *test
     environment:
       TEST_PLATFORM: playmode
+    executor: 
+      - unity_exec
+        image-platform: -windows
+      
+
 
   # build_windows:
   #   <<: *build
