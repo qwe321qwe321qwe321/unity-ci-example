@@ -38,7 +38,8 @@ executors:
           - unity-library-v1-{{ .Branch }}-{{ checksum "checksum_file" }}
           - unity-library-v1-{{ .Branch }}-
           - unity-library-v1-
-    - run: mv ./cache_folder ./$(PROJECT_PATH)Library
+    # Caching back library folder.
+    - run: mv ./cache_folder ./$(PROJECT_PATH)Library || exit 0
     - run:
         name: Running tests
         command: chmod +x ./ci/test.sh && ./ci/test.sh
@@ -80,6 +81,7 @@ executors:
           - unity-library-v1-{{ .Branch }}-{{ checksum "checksum_file" }}
           - unity-library-v1-{{ .Branch }}-
           - unity-library-v1-
+    # Caching back library folder.
     - run: mv ./cache_folder ./$(PROJECT_PATH)Library || exit 0
     - run:
         name: Building game binaries
