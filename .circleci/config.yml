@@ -37,7 +37,7 @@ executors:
     - restore_cache:
         keys:
           # when lock file changes, use increasingly general patterns to restore cache
-          - unity-library-v1-{{ .Branch }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "Packages/manifest.json" }}
+          - unity-library-v1-{{ .Branch }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "./Packages/manifest.json" }}
           - unity-library-v1-{{ .Branch }}-{{ .Environment.CIRCLE_JOB }}-
           - unity-library-v1-{{ .Branch }}-
           - unity-library-v1-
@@ -48,7 +48,7 @@ executors:
     - save_cache:
         paths:
           - ./Library # Cache folder.
-        key: unity-library-v1-{{ .Branch }}-{{ checksum "Packages/manifest.json" }}
+        key: unity-library-v1-{{ .Branch }}-{{ checksum "./Packages/manifest.json" }}
     - store_artifacts:
         path: $(pwd)/$TEST_PLATFORM-TestResults.xml
 
@@ -80,7 +80,7 @@ executors:
     - restore_cache:
         keys:
           # when lock file changes, use increasingly general patterns to restore cache
-          - unity-library-v1-{{ .Branch }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "Packages/manifest.json" }}
+          - unity-library-v1-{{ .Branch }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "./Packages/manifest.json" }}
           - unity-library-v1-{{ .Branch }}-{{ .Environment.CIRCLE_JOB }}-
           - unity-library-v1-{{ .Branch }}-
           - unity-library-v1-
@@ -91,7 +91,7 @@ executors:
     - save_cache:
         paths:
           - ./Library # Cache folder.
-        key: unity-library-v1-{{ .Branch }}-{{ checksum "Packages/manifest.json" }}
+        key: unity-library-v1-{{ .Branch }}-{{ checksum "./Packages/manifest.json" }}
     - run: 
         name: Zipping build
         command: apt update && apt -y install zip && zip -r "build.zip" ./Builds/
