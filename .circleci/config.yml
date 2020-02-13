@@ -8,7 +8,7 @@ executors:
       UNITY_VERSION: 2018.4.13f1
       BUILD_NAME: ExampleProjectName
       # Just comment it if the project path is root.
-      PROJECT_PATH: ./project
+      PROJECT_PATH: ./project/
 
 .test: &test
   executor: unity_exec
@@ -86,7 +86,7 @@ executors:
           - unity-library-v1-
     - run:
         name: Building game binaries
-        command: chmod +x ./ci/build.sh && ./${PROJECT_PATH}ci/build.sh
+        command: chmod +x ./ci/build.sh && ./ci/build.sh
     # Caching "Libarary" folder.
     - save_cache:
         paths:
