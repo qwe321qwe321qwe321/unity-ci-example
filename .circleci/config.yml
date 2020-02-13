@@ -3,10 +3,12 @@ version: 2.1
 executors:
   unity_exec:
     docker:
-      - image: gableroux/unity3d:$UNITY_VERSION$DOCKER_PLATFORM
+      - image: gableroux/unity3d:$(UNITY_VERSION)$(DOCKER_PLATFORM)
     environment:
       UNITY_VERSION: 2018.4.13f1
       BUILD_NAME: ExampleProjectName
+      # Just comment it if the project path is root.
+      #PROJECT_PATH: /project
 
 .test: &test
   executor: unity_exec
@@ -16,23 +18,35 @@ executors:
         name: Fetching build scripts
         command: |
           apt update && apt install -y git 
-          git clone https://github.com/qwertyuu/unity-ci-build-scripts.git
+          git clone https://github.com/qwe321qwe321qwe321/unity-ci-build-scripts.git
     - run:
         name: Getting build scripts for your unity version if possible
-        command: if [ $(git ls-remote https://github.com/qwertyuu/unity-ci-build-scripts.git "$UNITY_VERSION" | wc -l) -eq 1 ]; then cd unity-ci-build-scripts && git pull origin "$UNITY_VERSION" && cd ..; fi
+        command: if [ $(git ls-remote https://github.com/qwe321qwe321qwe321/unity-ci-build-scripts.git "$UNITY_VERSION" | wc -l) -eq 1 ]; then cd unity-ci-build-scripts && git pull origin "$UNITY_VERSION" && cd ..; fi
     - run:
         name: Injecting build scripts into the project
         command: |
-          cp -r unity-ci-build-scripts/Assets/Editor ./Assets
-          cp -r unity-ci-build-scripts/ci ./ci
+          cp -r unity-ci-build-scripts/Assets/Editor ./$(PROJECT_PATH)Assets
+          cp -r unity-ci-build-scripts/ci ./$(PROJECT_PATH)ci
     - run: 
         name: Converting Unity license
-        command: chmod +x ./ci/before_script.sh && ./ci/before_script.sh
+        command: chmod +x ./ci/before_script.sh && ./$(PROJECT_PATH)ci/before_script.sh
+    # Caching "Libarary" folder.
+    - restore_cache:
+      keys:
+        # when lock file changes, use increasingly general patterns to restore cache
+        - unity-library-v1-{{ .Branch }}-{{ checksum "$(PROJECT_PATH)Packages/manifest.json" }}
+        - unity-library-v1-{{ .Branch }}-
+        - unity-library-v1-
     - run:
         name: Running tests
         command: chmod +x ./ci/test.sh && ./ci/test.sh
+    # Caching "Libarary" folder.
+    - save_cache:
+      paths:
+        - ./$(PROJECT_PATH)Packages  # cacahe path.
+      key: unity-library-v1-{{ .Branch }}-{{ checksum "$(PROJECT_PATH)Packages/manifest.json" }}
     - store_artifacts:
-        path: $(pwd)/$TEST_PLATFORM-results.xml
+        path: $(pwd)/$(TEST_PLATFORM)-TestResults.xml
 
 .build: &build
   executor: unity_exec
@@ -42,10 +56,10 @@ executors:
         name: Fetching build scripts
         command: |
           apt update && apt install -y git 
-          git clone https://github.com/qwertyuu/unity-ci-build-scripts.git
+          git clone https://github.com/qwe321qwe321qwe321/unity-ci-build-scripts.git
     - run:
         name: Getting build scripts for your unity version if possible
-        command: if [ $(git ls-remote https://github.com/qwertyuu/unity-ci-build-scripts.git "$UNITY_VERSION" | wc -l) -eq 1 ]; then cd unity-ci-build-scripts && git pull origin "$UNITY_VERSION" && cd ..; fi
+        command: if [ $(git ls-remote https://github.com/qwe321qwe321qwe321/unity-ci-build-scripts.git "$UNITY_VERSION" | wc -l) -eq 1 ]; then cd unity-ci-build-scripts && git pull origin "$UNITY_VERSION" && cd ..; fi
     - run:
         name: Injecting build scripts into the project
         command: |
@@ -62,7 +76,7 @@ executors:
         name: Zipping build
         command: apt update && apt -y install zip && zip -r "build.zip" ./Builds/
     - store_artifacts:
-        path: build.zip
+        path: Build-$(BUILD_TARGET).zip
 
 jobs:
   test_editmode:
@@ -74,24 +88,24 @@ jobs:
     environment:
       TEST_PLATFORM: playmode
 
-  build_windows:
-    <<: *build
-    environment:
-      DOCKER_PLATFORM: -windows
-      BUILD_TARGET: StandaloneWindows64
-  build_osx:
-    <<: *build
-    environment:
-      DOCKER_PLATFORM: -mac
-      BUILD_TARGET: StandaloneOSX
-  build_linux:
-    <<: *build
-    environment:
-      BUILD_TARGET: StandaloneLinux64
-  build_webgl:
-    <<: *build
-    environment:
-      BUILD_TARGET: WebGL
+  # build_windows:
+  #   <<: *build
+  #   environment:
+  #     DOCKER_PLATFORM: -windows
+  #     BUILD_TARGET: StandaloneWindows64
+  # build_osx:
+  #   <<: *build
+  #   environment:
+  #     DOCKER_PLATFORM: -mac
+  #     BUILD_TARGET: StandaloneOSX
+  # build_linux:
+  #   <<: *build
+  #   environment:
+  #     BUILD_TARGET: StandaloneLinux64
+#  build_webgl:
+#    <<: *build
+#    environment:
+#      BUILD_TARGET: WebGL
           
 workflows:
   version: 2
@@ -100,18 +114,18 @@ workflows:
       - test_editmode
       - test_playmode
       
-      - build_windows:
-          requires:
-          - test_editmode
-          - test_playmode
-      - build_osx:
-          requires:
-          - test_editmode
-          - test_playmode
-      - build_linux:
-          requires:
-          - test_editmode
-          - test_playmode
+      # - build_windows:
+      #     requires:
+      #     - test_editmode
+      #     - test_playmode
+      # - build_osx:
+      #     requires:
+      #     - test_editmode
+      #     - test_playmode
+      # - build_linux:
+      #     requires:
+      #     - test_editmode
+      #     - test_playmode
 # Sadly webgl builds seem broken as of now... trying to fix this asap.
 #      - build_webgl:
 #          requires:
