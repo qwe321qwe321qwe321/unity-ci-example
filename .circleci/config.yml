@@ -16,7 +16,7 @@ executors:
     - checkout
     - run:
         name: Cd to project folder
-        command: pwd && ls && cd $PROJECT_PATH && echo $PROJECT_PATH && pwd && ls
+        command: cd ${PROJECT_PATH}
     - run:
         name: Fetching build scripts
         command: |
@@ -37,10 +37,12 @@ executors:
     - restore_cache:
         keys:
           # when lock file changes, use increasingly general patterns to restore cache
-          - unity-library-v1-{{ .Branch }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "./Packages/manifest.json" }}
+          - unity-library-v1-{{ .Branch }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "Packages/manifest.json" }}
           - unity-library-v1-{{ .Branch }}-{{ .Environment.CIRCLE_JOB }}-
           - unity-library-v1-{{ .Branch }}-
           - unity-library-v1-
+    # Caching back library folder.
+    - run: mv /root/project/cache_folder ./Library || exit 0
     - run:
         name: Running tests
         command: chmod +x ./ci/test.sh && ./ci/test.sh
@@ -48,7 +50,7 @@ executors:
     - save_cache:
         paths:
           - ./Library # Cache folder.
-        key: unity-library-v1-{{ .Branch }}-{{ checksum "./Packages/manifest.json" }}
+        key: unity-library-v1-{{ .Branch }}-{{ checksum "Packages/manifest.json" }}
     - store_artifacts:
         path: $(pwd)/$TEST_PLATFORM-TestResults.xml
 
@@ -77,21 +79,25 @@ executors:
         command: chmod +x ./ci/before_script.sh && ./ci/before_script.sh
     - run: ls -ls /usr/bin/python*
       # Caching "Libarary" folder.
+    - run: cp ./Packages/manifest.json /root/project/checksum_file
     - restore_cache:
         keys:
           # when lock file changes, use increasingly general patterns to restore cache
-          - unity-library-v1-{{ .Branch }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "./Packages/manifest.json" }}
+          - unity-library-v1-{{ .Branch }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "checksum_file" }}
           - unity-library-v1-{{ .Branch }}-{{ .Environment.CIRCLE_JOB }}-
           - unity-library-v1-{{ .Branch }}-
           - unity-library-v1-
+    # Caching back library folder.
+    - run: mv /root/project/cache_folder ./Library || exit 0
     - run:
         name: Building game binaries
         command: chmod +x ./ci/build.sh && ./ci/build.sh
     # Caching "Libarary" folder.
+    - run: mv ./Library /root/project/cache_folder # cache path.
     - save_cache:
         paths:
-          - ./Library # Cache folder.
-        key: unity-library-v1-{{ .Branch }}-{{ checksum "./Packages/manifest.json" }}
+          - /root/project/cache_folder
+        key: unity-library-v1-{{ .Branch }}-{{ checksum "checksum_file" }}
     - run: 
         name: Zipping build
         command: apt update && apt -y install zip && zip -r "build.zip" ./Builds/
