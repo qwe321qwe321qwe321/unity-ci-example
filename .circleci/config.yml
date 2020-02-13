@@ -8,15 +8,12 @@ executors:
       UNITY_VERSION: 2018.4.13f1
       BUILD_NAME: ExampleProjectName
       # Just comment it if the project path is root.
-      PROJECT_PATH: ./project/
+      PROJECT_PATH: project/
 
 .test: &test
   executor: unity_exec
   steps:
     - checkout
-    - run:
-        name: Cd to project folder
-        command: cd ${PROJECT_PATH}
     - run:
         name: Fetching build scripts
         command: |
@@ -28,13 +25,13 @@ executors:
     - run:
         name: Injecting build scripts into the project
         command: |
-          cp -r unity-ci-build-scripts/Assets/Editor ./Assets
-          cp -r unity-ci-build-scripts/ci ./ci
+          cp -r unity-ci-build-scripts/Assets/Editor ./${PROJECT_PATH}Assets
+          cp -r unity-ci-build-scripts/ci ./${PROJECT_PATH}ci
     - run: 
         name: Converting Unity license
-        command: chmod +x ./ci/before_script.sh && ./ci/before_script.sh
+        command: chmod +x ./${PROJECT_PATH}ci/before_script.sh && ./${PROJECT_PATH}ci/before_script.sh
     # Caching "Libarary" folder.
-    - run: cp ./Packages/manifest.json /root/project/checksum_file
+    - run: cp ${PROJECT_PATH}Packages/manifest.json checksum_file
     - restore_cache:
         keys:
           # when lock file changes, use increasingly general patterns to restore cache
@@ -43,14 +40,15 @@ executors:
           - unity-library-v1-{{ .Branch }}-
           - unity-library-v1-
     # Caching back library folder.
-    - run: mv /root/project/cache_folder ./Library || exit 0
+    - run: mv ./cache_folder ./${PROJECT_PATH}Library || exit 0
     - run:
         name: Running tests
-        command: chmod +x ./ci/test.sh && ./ci/test.sh
+        command: chmod +x ./${PROJECT_PATH}ci/test.sh && ./${PROJECT_PATH}ci/test.sh
     # Caching "Libarary" folder.
+    - run: mv ./${PROJECT_PATH}Library ./cache_folder # cache path.
     - save_cache:
         paths:
-          - ./Library # Cache folder.
+          - ./cache_folder
         key: unity-library-v1-{{ .Branch }}-{{ checksum "checksum_file" }}
     - store_artifacts:
         path: $(pwd)/$TEST_PLATFORM-TestResults.xml
@@ -60,9 +58,6 @@ executors:
   steps:
     - checkout
     - run:
-        name: Cd to project folder
-        command: cd ${PROJECT_PATH}
-    - run:
         name: Fetching build scripts
         command: |
           apt update && apt install -y git 
@@ -73,14 +68,14 @@ executors:
     - run:
         name: Injecting build scripts into the project
         command: |
-          cp -r unity-ci-build-scripts/Assets/Editor ./Assets
-          cp -r unity-ci-build-scripts/ci ./ci
+          cp -r unity-ci-build-scripts/Assets/Editor ./${PROJECT_PATH}Assets
+          cp -r unity-ci-build-scripts/ci ./${PROJECT_PATH}ci
     - run: 
         name: Converting Unity license
-        command: chmod +x ./ci/before_script.sh && ./ci/before_script.sh
+        command: chmod +x ./${PROJECT_PATH}ci/before_script.sh && ./${PROJECT_PATH}ci/before_script.sh
     - run: ls -ls /usr/bin/python*
       # Caching "Libarary" folder.
-    - run: cp ./Packages/manifest.json /root/project/checksum_file
+    - run: cp ${PROJECT_PATH}Packages/manifest.json checksum_file
     - restore_cache:
         keys:
           # when lock file changes, use increasingly general patterns to restore cache
@@ -89,19 +84,19 @@ executors:
           - unity-library-v1-{{ .Branch }}-
           - unity-library-v1-
     # Caching back library folder.
-    - run: mv /root/project/cache_folder ./Library || exit 0
+    - run: mv ./cache_folder ./${PROJECT_PATH}Library || exit 0
     - run:
         name: Building game binaries
-        command: chmod +x ./ci/build.sh && ./ci/build.sh
+        command: chmod +x ./${PROJECT_PATH}ci/build.sh && ./${PROJECT_PATH}ci/build.sh
     # Caching "Libarary" folder.
-    - run: mv ./Library /root/project/cache_folder # cache path.
+    - run: mv ./${PROJECT_PATH}Library ./cache_folder # cache path.
     - save_cache:
         paths:
-          - /root/project/cache_folder
+          - ./cache_folder
         key: unity-library-v1-{{ .Branch }}-{{ checksum "checksum_file" }}
     - run: 
         name: Zipping build
-        command: apt update && apt -y install zip && zip -r "build.zip" ./Builds/
+        command: apt update && apt -y install zip && zip -r "build.zip" ./${PROJECT_PATH}Builds/
     - store_artifacts:
         path: Build-$BUILD_TARGET.zip
 
