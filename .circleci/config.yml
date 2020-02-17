@@ -91,7 +91,7 @@ executors:
     - save_cache:
         paths:
           - ./cache_folder
-        key: unity-library-v2-{{ .Branch }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "checksum_file" }}
+        key: unity-library-v2-{{ .Environment.CIRCLE_JOB }}-{{ .Branch }}-{{ checksum "checksum_file" }}
     - run: 
         name: Zipping build
         command: apt update && apt -y install zip && zip -r "Build.zip" ./${PROJECT_PATH}Builds/
